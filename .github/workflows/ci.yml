@@ -1,4 +1,4 @@
-name: Project Skeleton CI
+name: Propaganda Detection
 
 on:
   push:
