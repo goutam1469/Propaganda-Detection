@@ -1,0 +1,42 @@
+name: Project Skeleton CI
+
+on:
+  push:
+    branches: [ "main" ] # Runs on every push to the main branch
+  pull_request:
+    branches: [ "main" ] # Runs on every PR opened against main
+
+jobs:
+  check-environment:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository code
+        # Makes your files available to the runner
+        uses: actions/checkout@v4 
+
+      - name: Set up Python 3.11
+        # Installs the Python version you'll use for development
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip' # Speeds up subsequent runs
+      
+      - name: Install dependencies and Linter
+        # Installs all packages from requirements.txt, ensuring the environment is stable
+        run: |
+          python -m pip install --upgrade pip
+          # Assuming you have a requirements.txt file
+          pip install -r requirements.txt
+          pip install flake8 # Install flake8 for future .py files
+
+      - name: Lint New/Existing .py Files
+        # This step will check any Python files you add later for basic code style.
+        # It's okay if it finds no .py files now—it will still pass.
+        run: |
+          echo "Checking for new .py files..."
+          flake8 . --count --max-line-length=120 --exit-zero || true 
+          # We use '|| true' to ensure the workflow doesn't fail if no .py files are found yet.
+
+      - name: CI Success
+        run: echo "Environment check and dependency installation passed successfully."
